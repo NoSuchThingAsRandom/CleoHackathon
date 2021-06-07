@@ -1,97 +1,121 @@
+import 'package:cleo_hackathon/chat_backend.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'data.dart';
 
-class Message {
-  /// The text to display for this message
-  final String content;
+// Useful: https://www.freecodecamp.org/news/build-a-chat-app-ui-with-flutter/
 
-  /// Whether the message sender is cleo, or the user
-  final bool isCleo;
+class ChatPage extends StatelessWidget {
+  const ChatPage({Key? key}) : super(key: key);
 
-  Message(this.content, this.isCleo);
+  @override
+  Widget build(BuildContext context) {
+    // Simple provider for storing messages
+    // https://flutter.dev/docs/development/data-and-backend/state-mgmt/simple#changenotifier
+    return ChangeNotifierProvider(
+        create: (context) => ChatBackend(), child: _ChatPage());
+  }
 }
 
-// Useful: https://www.freecodecamp.org/news/build-a-chat-app-ui-with-flutter/
-class ChatPage extends StatelessWidget {
-  // TODO Create better messages
-  final messages = [
-    Message("Hello", false),
-    Message("How are you?", true),
-  ];
+class _ChatPage extends StatefulWidget {
+  const _ChatPage({Key? key}) : super(key: key);
+
+  @override
+  State<_ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<_ChatPage> {
+  final TextEditingController controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Stack(children: <Widget>[
       /// Builds and displays the messages
-      ListView.builder(
-          itemCount: messages.length,
-          itemBuilder: (BuildContext context, int index) {
-            return ChatMessage(messages[index]);
-          }),
+      Consumer<ChatBackend>(builder: (context, chatBackend, child) {
+        return ListView.builder(
+            itemCount: chatBackend.messages.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ChatMessage(chatBackend.messages.elementAt(index));
+            });
+      }),
 
       /// Builds the keyboard entry
       Align(
           alignment: Alignment.bottomLeft,
           child: Container(
-                  padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
-                  height: 60,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Data.paper_white,
+              padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
+              height: 60,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Data.paper_white,
+              ),
+              child: Row(children: <Widget>[
+                /// This is placeholder for the feature suggestion
+                GestureDetector(
+                  onTap: () {},
+                  child: Container(
+                    height: 30,
+                    width: 30,
+                    decoration: BoxDecoration(
+                      color: Data.cleo_blue_tint_2,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Icon(
+                      Icons.lightbulb,
+                      color: Data.paper_white,
+                      size: 20,
+                    ),
                   ),
-                  child: Row(children: <Widget>[
-
-                    /// This is placeholder for the feature suggestion
-                    GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        height: 30,
-                        width: 30,
-                        decoration: BoxDecoration(
-                          color: Data.cleo_blue_tint_2,
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: Icon(
-                          Icons.lightbulb,
-                          color: Data.paper_white,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-
-                    /// Padding
-                    SizedBox(
-                      width: 15,
-                    ),
-
-                    /// Builds the keyboard entry
-                    Expanded(
-                      child: TextField(
-                        decoration: InputDecoration(
-                            hintText: "Say something...",
-                            hintStyle: TextStyle(color: Data.boss_black_tint_2),
-                            border: InputBorder.none),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 15,
-                    ),
-
-                    /// Submit button, could technically remove it?
-                    FloatingActionButton(
-                  onPressed: () {},
-                  child: Icon(
-                    Icons.send,
-                    color: Data.paper_white,
-                    size: 18,
-                  ),
-                  backgroundColor: Data.cleo_blue_tint_2,
-                  elevation: 0,
                 ),
+
+                /// Padding
+                SizedBox(
+                  width: 15,
+                ),
+
+                /// Builds the keyboard entry
+                Expanded(
+                  child: TextField(
+                    controller: controller,
+                    decoration: InputDecoration(
+                        hintText: "Say something...",
+                        hintStyle: TextStyle(color: Data.boss_black_tint_2),
+                        border: InputBorder.none),
+                  ),
+                ),
+                SizedBox(
+                  width: 15,
+                ),
+
+                /// Submit button, could technically remove it?
+                Consumer<ChatBackend>(
+                  builder: (context, chatBackend, child) {
+                    return FloatingActionButton(
+                      onPressed: () {
+                        print("Adding message ${controller.text}");
+                        chatBackend.add(Message(controller.text, false));
+                      },
+                      child: Icon(
+                        Icons.send,
+                        color: Data.paper_white,
+                        size: 18,
+                      ),
+                      backgroundColor: Data.cleo_blue_tint_2,
+                      elevation: 0,
+                    );
+                  },
+                )
               ]))),
     ]);
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    controller.dispose();
+    super.dispose();
   }
 }
 
