@@ -4,7 +4,7 @@ import 'package:flutter/painting.dart';
 import 'data.dart';
 
 class CleoAppBar extends StatefulWidget implements PreferredSizeWidget {
-  CleoAppBar({Key key})
+  CleoAppBar({Key? key})
       : preferredSize = Size.fromHeight(kToolbarHeight),
         super(key: key);
 

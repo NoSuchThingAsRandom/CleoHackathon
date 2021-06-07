@@ -1,44 +1,39 @@
-import 'package:cleo_hackathon/cleo_appbar.dart';
 import 'package:flutter/material.dart';
 
 import 'data.dart';
 
 class Message {
   /// The text to display for this message
-  String content;
+  final String content;
 
   /// Whether the message sender is cleo, or the user
-  bool isCleo;
+  final bool isCleo;
 
-  Message(String content, bool isCleo) {
-    this.content = content;
-    this.isCleo = isCleo;
-  }
+  Message(this.content, this.isCleo);
 }
 
+// Useful: https://www.freecodecamp.org/news/build-a-chat-app-ui-with-flutter/
 class ChatPage extends StatelessWidget {
   // TODO Create better messages
-  var messages = [
+  final messages = [
     Message("Hello", false),
     Message("How are you?", true),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: CleoAppBar(),
-        body: Stack(children: <Widget>[
-          /// Builds and displays the messages
-          ListView.builder(
-              itemCount: messages.length,
-              itemBuilder: (BuildContext context, int index) {
-                return ChatMessage(messages[index]);
-              }),
+    return Stack(children: <Widget>[
+      /// Builds and displays the messages
+      ListView.builder(
+          itemCount: messages.length,
+          itemBuilder: (BuildContext context, int index) {
+            return ChatMessage(messages[index]);
+          }),
 
-          /// Builds the keyboard entry
-          Align(
-              alignment: Alignment.bottomLeft,
-              child: Container(
+      /// Builds the keyboard entry
+      Align(
+          alignment: Alignment.bottomLeft,
+          child: Container(
                   padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
                   height: 60,
                   width: double.infinity,
@@ -86,17 +81,17 @@ class ChatPage extends StatelessWidget {
 
                     /// Submit button, could technically remove it?
                     FloatingActionButton(
-                      onPressed: () {},
-                      child: Icon(
-                        Icons.send,
-                        color: Data.paper_white,
-                        size: 18,
-                      ),
-                      backgroundColor: Data.cleo_blue_tint_2,
-                      elevation: 0,
-                    ),
-                  ]))),
-        ]));
+                  onPressed: () {},
+                  child: Icon(
+                    Icons.send,
+                    color: Data.paper_white,
+                    size: 18,
+                  ),
+                  backgroundColor: Data.cleo_blue_tint_2,
+                  elevation: 0,
+                ),
+              ]))),
+    ]);
   }
 }
 
