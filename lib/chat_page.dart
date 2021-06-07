@@ -1,3 +1,4 @@
+import 'package:cleo_hackathon/cleo_appbar.dart';
 import 'package:flutter/material.dart';
 
 import 'data.dart';
@@ -17,14 +18,15 @@ class Message {
 
 class ChatPage extends StatelessWidget {
   // TODO Create better messages
-  var messages = [Message("Hello", false), Message("How are you?", true)];
+  var messages = [
+    Message("Hello", false),
+    Message("How are you?", true),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Cleo", textAlign: TextAlign.center),
-        ),
+        appBar: CleoAppBar(),
         body: Stack(children: <Widget>[
           /// Builds and displays the messages
           ListView.builder(
@@ -45,6 +47,7 @@ class ChatPage extends StatelessWidget {
                     color: Data.paper_white,
                   ),
                   child: Row(children: <Widget>[
+
                     /// This is placeholder for the feature suggestion
                     GestureDetector(
                       onTap: () {},
