@@ -1,10 +1,10 @@
 import 'package:cleo_hackathon/cleo_appbar.dart';
-import 'package:cleo_hackathon/goal_creation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'chat_page.dart';
 import 'data.dart';
+import 'goals.dart';
 
 void main() {
   runApp(Cleo());
@@ -37,7 +37,7 @@ class _CleoAppState extends State<CleoApp> {
   int _selectedIndex = 0;
   List<Widget> _screens = <Widget>[
     ChatPage(),
-    GoalCreation(),
+    Goals(),
   ];
 
   void _onItemTapped(int index) {
