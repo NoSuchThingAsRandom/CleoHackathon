@@ -170,6 +170,9 @@ class GoalCheckInState extends State<GoalCheckIn> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
       child: ListTile(
         title: Padding(
           child: Text(
@@ -187,12 +190,12 @@ class GoalCheckInState extends State<GoalCheckIn> {
           itemBuilder: (BuildContext context, int index) {
             CommitmentModel commitment =
             widget.goal.commitments.elementAt(index);
-            bool test = (commitment.successfulDays["today"] ?? false);
             return ListTile(
               title: Text("${commitment.name}"),
               trailing: Row(mainAxisSize: MainAxisSize.min, children: [
                 Container(
                     decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
                         color: (commitment.successfulDays["today"] ?? false)
                             ? Data.cleo_blue_tint_2
                             : null),
@@ -209,6 +212,7 @@ class GoalCheckInState extends State<GoalCheckIn> {
                         })),
                 Container(
                   decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
                       color: !(commitment.successfulDays["today"] ?? true)
                           ? Data.cleo_blue_tint_2
                           : null),
