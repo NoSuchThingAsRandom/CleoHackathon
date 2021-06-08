@@ -1,16 +1,13 @@
-# cleo_hackathon
+Commitments for Goals
 
-Introducing goals to cleo
+As part of Cleo's mission to improve the worlds financial health, we are introducing Commitmentsfor Goals This will help users to get to their goals with the little things, a snack here or a little thing here and soon after you have reached a goal.
 
-## Getting Started
+Install with git clone (repo address)
+cd CleoHackathon
+flutter fun -d chome for web
 
-This project is a starting point for a Flutter application.
+To use the app you will be first lead to chat to interact with the chat. You can also review and add new goals to track your progress with Goals.
 
-A few resources to get you started if this is your first Flutter project:
+We have written this with Dart using the Flutter framework which allows easy cross platform apps to deliver financial health around the world. We have also used fl_chart, google_fonts, cupertino_icons and provider to boost our app and to get where we are now.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Acknowledgements to the hard work of our team and our mentors from the Cleo. team in bringing this all together.
