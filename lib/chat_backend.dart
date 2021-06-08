@@ -1,6 +1,10 @@
 import 'dart:collection';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
+
+import 'commitment_model.dart';
+import 'goal_model.dart';
 
 class Message {
   /// The text to display for this message
