@@ -193,12 +193,12 @@ class GoalModificationState extends State<GoalModification> {
                                                 .selectedCommitments
                                                 .removeAt(index);
                                           });
-                                            },
-                                          ),
-                                        );
-                                      }),
-                                ),
-                              ])),
+                                        },
+                                      ),
+                                    );
+                                  }),
+                            ),
+                          ])),
                       SizedBox(
                         height: 8,
                       ),
@@ -214,7 +214,8 @@ class GoalModificationState extends State<GoalModification> {
                           Consumer<GoalBackend>(
                               builder: (context, goalBackend, child) {
                             return ElevatedButton(
-                                child: Text("Create!"),
+                                child: Text(
+                                    widget.goal == null ? "Create!" : "Done!"),
                                 onPressed: () {
                                   _formKey.currentState?.save();
                                   GoalModel newGoal = GoalModel.newGoal(

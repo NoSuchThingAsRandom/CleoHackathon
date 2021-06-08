@@ -1,3 +1,4 @@
+import 'package:cleo_hackathon/commitment_modification.dart';
 import 'package:cleo_hackathon/goal_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -5,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import 'commitment_model.dart';
 import 'daily_check_in.dart';
+import 'data.dart';
 import 'goal_model.dart';
 import 'goal_modification.dart';
 
@@ -35,99 +37,108 @@ class Goals extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(mainAxisSize: MainAxisSize.min, children: [
-      Text(
-        "The goal: " + goal.name,
-        style: GoogleFonts.archivoBlack(),
-        textScaleFactor: 1.8,
-      ),
-      Padding(
-        padding: EdgeInsets.all(10),
-      ),
-      //graph
-      GoalDescription(goal),
-      Padding(
-        padding: EdgeInsets.all(10),
-      ),
-      GoalDates(goal),
-      Padding(
-        padding: EdgeInsets.all(5),
-        child: GoalProgressBox(goal),
-      ),
+    return Stack(children: [
+      SingleChildScrollView(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+        ListTile(
+          title: Text(
+            goal.name,
+            style: GoogleFonts.archivoBlack(),
+            textScaleFactor: 1.8,
+            textAlign: TextAlign.center,
+          ),
+          trailing: IconButton(
+            icon: Icon(Icons.edit_outlined),
+            onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => GoalModification(this.goal))),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(10),
+        ),
+        //graph
+        GoalDescription(goal),
+        Padding(
+          padding: EdgeInsets.all(10),
+        ),
+        GoalDates(goal),
+        Padding(
+          padding: EdgeInsets.all(5),
+          child: GoalProgressBox(goal),
+        ),
 
-      CommitmentList(goal),
+        CommitmentList(goal),
+        Align(
+            alignment: Alignment.center,
+            child: ElevatedButton(
+              child: Text("Daily Check in"),
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => DailyCheckInPage())),
+            ))
+      ])),
       Align(
-          alignment: Alignment.center,
-          child: ElevatedButton(
-            child: Text("Create Goal"),
+          alignment: Alignment.bottomRight,
+          child: FloatingActionButton(
+            child: Icon(Icons.add),
+            backgroundColor: Data.boss_black_tint_2,
             onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => GoalModification(null))),
-          )),
-      Align(
-          alignment: Alignment.center,
-          child: ElevatedButton(
-            child: Text("Daily Check in"),
-            onPressed: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => DailyCheckInPage())),
           ))
     ]);
   }
 }
 
-class CommitmentList extends StatefulWidget {
+class CommitmentList extends StatelessWidget {
+  final GoalModel goal;
+
   CommitmentList(this.goal);
-
-  final GoalModel goal;
-
-  @override
-  _CommitmentListState createState() => _CommitmentListState(goal);
-}
-
-class _CommitmentListState extends State<CommitmentList> {
-  _CommitmentListState(this.goal);
-
-  final GoalModel goal;
-  final List<String> commitments = <String>[];
-  final List<String> ammounts = <String>[];
-
-  @override
-  void initState(){
-    super.initState();
-    for(CommitmentModel commitment in goal.commitments) {
-      commitments.add(commitment.name);
-      ammounts.add(commitment.targetAmount.toDouble().toStringAsFixed(2));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Column(mainAxisSize: MainAxisSize.min, children: [
-      Text("See your commits", style: TextStyle(
-        fontSize: 40,
-        fontWeight: FontWeight.bold,
+      Text(
+        "Your commitments: ",
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+        ),
+        textScaleFactor: 1.6,
       ),
-      ),
-      Text("name - cost", style: TextStyle(
-        fontSize: 40,
-        fontWeight: FontWeight.bold,
-      ),
-      ),
+      Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 5)),
       //some div?
       Center(
         child: ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
-            itemCount: commitments.length,
+            itemCount: goal.commitments.length,
             itemBuilder: (BuildContext context, int index) {
               return Card(
                 child: ListTile(
-                  title: Text("${commitments[index]} - £${ammounts[index]} per day",
-                    style: TextStyle(
-                      fontSize: 24,
-                    ),
+                  title: Text(
+                    "${goal.commitments.elementAt(index).name} - £${goal.commitments.elementAt(index).targetAmount} per day",
+                    textScaleFactor: 1.2,
                     textAlign: TextAlign.center,
                   ),
+                  trailing: IconButton(
+                      icon: Icon(Icons.edit_outlined),
+                      onPressed: () async {
+                        final commitment = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CommitmentModification(
+                                    goal.commitments.elementAt(index))));
+                        if (commitment != null) {
+                          GoalBackend backend =
+                              Provider.of<GoalBackend>(context, listen: false);
+                          backend.modifyCommitmentForGoal(
+                              this.goal,
+                              this.goal.commitments.elementAt(index),
+                              commitment);
+                        }
+                      }),
                 ),
               );
             }),
@@ -147,18 +158,18 @@ class GoalDates extends StatelessWidget {
       child: Column(children: [
         Padding(
           padding: EdgeInsets.all(5),
-          child:GoalFinishDate(goal.targetDate),
+          child: GoalFinishDate(goal.targetDate),
         ),
         Padding(
           padding: EdgeInsets.all(5),
-          child:GoalExpectedDate(goal),
+          child: GoalExpectedDate(goal),
         ),
       ]),
     );
   }
 }
-class GoalFinishDate extends StatefulWidget {
 
+class GoalFinishDate extends StatefulWidget {
   GoalFinishDate(this.goalDate);
 
   final DateTime goalDate;
@@ -168,7 +179,6 @@ class GoalFinishDate extends StatefulWidget {
 }
 
 class _GoalFinishDate extends State<GoalFinishDate> {
-
   _GoalFinishDate(this.goalDate);
 
   final DateTime goalDate;
@@ -280,10 +290,9 @@ class GoalDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text("Description: " + goal.description,
-      style: TextStyle(
-        fontSize: 24,
-      ),
+    return Text(
+      goal.description,
+      textScaleFactor: 1.4,
     );
   }
 }
@@ -326,23 +335,22 @@ class _GoalProgressBoxState extends State<GoalProgressBox> {
             color: Colors.black,
             width: 3,
           )),
-      child: Column(
-          children:[
-            Text(
-              "Progress so far",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-              ),
-            ),
-            Text(
-              "$progressString or £$current of £$target",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 32,
-              ),
-            ),
-          ]),
+      child: Column(children: [
+        Text(
+          "Progress so far",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+          ),
+        ),
+        Text(
+          "$progressString or £$current of £$target",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 32,
+          ),
+        ),
+      ]),
     );
   }
 }

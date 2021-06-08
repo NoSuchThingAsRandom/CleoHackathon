@@ -90,7 +90,8 @@ class CommitmentModificationState extends State<CommitmentModification> {
                               primary: Data.roast_red)),
                       SizedBox(width: 16),
                       ElevatedButton(
-                          child: Text("Create!"),
+                          child:
+                              Text(widget.state == null ? "Create!" : "Done!"),
                           onPressed: () {
                             _formKey.currentState?.save();
                             print("$newName   $newAmountSaved");

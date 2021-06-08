@@ -44,4 +44,13 @@ class GoalBackend extends ChangeNotifier {
     _allCommitments.addAll(newGoal.commitments);
     notifyListeners();
   }
+
+  void modifyCommitmentForGoal(GoalModel goal, CommitmentModel oldCommitment,
+      CommitmentModel newCommitment) {
+    int index = _goals.indexOf(goal);
+    _goals[index].commitments.remove(oldCommitment);
+    _goals[index].commitments.add(newCommitment);
+
+    notifyListeners();
+  }
 }
