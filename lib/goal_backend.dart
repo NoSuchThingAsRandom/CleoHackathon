@@ -5,6 +5,12 @@ import 'package:cleo_hackathon/goal_model.dart';
 import 'package:flutter/material.dart';
 
 class GoalBackend extends ChangeNotifier {
+  GoalBackend() {
+    _goals.add(GoalModel.templateOne());
+    _goals.add(GoalModel.templateTwo());
+    _goals.add(GoalModel.templateThree());
+  }
+
   List<GoalModel> _goals = [];
   LinkedHashSet<CommitmentModel> _allCommitments = LinkedHashSet();
 
