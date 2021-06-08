@@ -1,9 +1,11 @@
 import 'dart:collection';
+import 'dart:js';
 import 'dart:math';
 
 import 'package:cleo_hackathon/commitment_model.dart';
 import 'package:cleo_hackathon/goal_model.dart';
 import 'package:flutter/material.dart';
+import 'daily_check_in.dart';
 
 class Backend extends ChangeNotifier {
   Backend() {
@@ -13,7 +15,6 @@ class Backend extends ChangeNotifier {
   }
 
   /// Internal, private state of the messages.
-  // TODO Create better messages
   List<Message> _messages = [
     Message("Hello", false),
     Message("How are you?", true),
@@ -77,11 +78,24 @@ class Backend extends ChangeNotifier {
   /// Calculates what cleo should respond to on a given message
   Message calculateCleoResponse(Message message) {
     String words = message.content;
-    if (words.contains("?") && (words.contains("goal"))) {
-      ///basic way to determine whether the user asked for a list of their active goals
-      return Message("Forgottten already? \nhere they are:\n", true);
+    if (words.contains("checkin")){
+      String output = "";
+      for (GoalModel goal in _goals){
+        output += goal.name +":\n";
+            for (CommitmentModel commitment in goal.commitments){
+              output += commitment.name + "\n";
+            }
+            output += "\n";
+      }
+      return Message("Here is your daily check - in:\n\n" + output, true);
+    }
+    if (words.contains("?") && (words.contains("goal"))) {///basic way to determine whether the user asked for a list of their active goals
+      String output = "";
+      for (GoalModel goal in _goals){
+        output += (goal.name + ": " + (goal.currentAmount.toString()) + " out of " + (goal.targetAmount.toString()) + "saved" + "\n");
+      }
+      return Message("Forgottten already? \nHere they are:\n"+output, true);
 
-      ///TODO list of all goals on the goals screen. Percentage completed or days followed if commitment
     } else if (words.contains("want to")) {
       /// user wants to create a new goal or start a commitment(simplified for demonstration purposes)
       String kind = "";
@@ -108,16 +122,20 @@ class Backend extends ChangeNotifier {
             "Duration: " +
             amount.toString();
         CommitmentModel newCommitment =
-            CommitmentModel(aim, 0, new Map<String, bool>());
+        CommitmentModel(aim, 0, new Map<String, bool>());
 
-        ///TODO add to data store
-        return Message(output, true);
+        for (GoalModel goal in goals){
+          goal.commitments.add(newCommitment);
+        }
+        return Message("Legendary willpower!\nThe money saved from " +
+            aim +
+            " will get you those goals in no time!", true);
       }
       if (words.contains("save")) {
         kind = "Goal";
         String goalAim = words.split("want to save").elementAt(1);
         aim = goalAim.split("for").elementAt(1);
-        amount = int.parse(goalAim.split("for").elementAt(0));
+        amount = int.parse(goalAim.split("for").elementAt(0).replaceFirst("£", ""));
         String output = "Type: " +
             kind +
             "\n" +
@@ -129,8 +147,10 @@ class Backend extends ChangeNotifier {
         GoalModel newGoal = new GoalModel(
             aim, "", DateTime.now().add(Duration(days: 14)), amount, 0);
 
-        ///TODO add new goal to data store
-        return Message(output, true);
+        _goals.add(newGoal);
+        return Message("Nice job! You added the following goal:\n" +
+            output +
+            "\nTake a look over on the goal screen to make sure it is correct", true);
       }
     }
     if (words == "roast me") {
@@ -141,7 +161,7 @@ class Backend extends ChangeNotifier {
         "Nobody likes you",
         "Ive seen babies who are more financially literate",
         "I wish i was a real person so i could walk away from talking to you",
-        "*Guy carrying pizza walking into a room gif*",
+        "*Guy carrying pizza walking into a room on fire gif*",
       ];
       return Message(roasts[Random().nextInt(roasts.length)], true);
     } else {
