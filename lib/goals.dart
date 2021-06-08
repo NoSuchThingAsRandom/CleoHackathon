@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+
 import 'commitment_model.dart';
 import 'daily_check_in.dart';
 import 'goal_model.dart';
@@ -19,9 +20,20 @@ class Goals extends StatelessWidget {
         style: GoogleFonts.archivoBlack(),
         textScaleFactor: 1.8,
       ),
-      GoalProgressBar(goal),
+      Padding(
+        padding: EdgeInsets.all(10),
+      ),
+      //graph
       GoalDescription(goal),
+      Padding(
+        padding: EdgeInsets.all(10),
+      ),
       GoalDates(goal),
+      Padding(
+        padding: EdgeInsets.all(5),
+        child: GoalProgressBox(goal),
+      ),
+      
       CommitmentList(goal),
       Align(
           alignment: Alignment.center,
@@ -56,31 +68,49 @@ class _CommitmentListState extends State<CommitmentList> {
   _CommitmentListState(this.goal);
 
   final GoalModel goal;
-  final List<String> commitments = <String>["first"];
-  final List<int> ammounts = <int>[5];
+  final List<String> commitments = <String>[];
+  final List<String> ammounts = <String>[];
 
-  // @override
-  // void initState(){
-  //   super.initState();
-  //   for(CommitmentModel commitment in goal.commitments) {
-  //     commitments.add(commitment.name);
-  //     ammounts.add(commitment.targetAmount);
-  //   }
-  // }
+  @override
+  void initState(){
+    super.initState();
+    for(CommitmentModel commitment in goal.commitments) {
+      commitments.add(commitment.name);
+      ammounts.add(commitment.targetAmount.toDouble().toStringAsFixed(2));
+    }
+  }
   @override
   Widget build(BuildContext context) {
-    return Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text("See your commits"),
-          ListView.builder(
-              shrinkWrap: true,
-              itemCount: commitments.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Text("${commitments[index]} ${ammounts[index]}");
-              }),
-        ]);
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Text("See your commits", style: TextStyle(
+        fontSize: 40,
+        fontWeight: FontWeight.bold,
+      ),
+      ),
+      Text("name - cost", style: TextStyle(
+        fontSize: 40,
+        fontWeight: FontWeight.bold,
+      ),
+      ),
+      //some div?
+      Center(
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: commitments.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Card(
+              child: ListTile(
+                title: Text("${commitments[index]} - £${ammounts[index]} per day", 
+                  style: TextStyle(
+                    fontSize: 24, 
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            );
+          }),
+      )
+    ]);
   }
 }
 
@@ -92,26 +122,43 @@ class GoalDates extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(10),
       child: Column(children: [
-        GoalFinishDate(goal.targetDate),
-        GoalExpectedDate(goal),
+        Padding(
+          padding: EdgeInsets.all(5),
+          child:GoalFinishDate(goal.targetDate),
+        ),
+        Padding(
+          padding: EdgeInsets.all(5),
+          child:GoalExpectedDate(goal),
+        ),
       ]),
     );
   }
 }
+class GoalFinishDate extends StatefulWidget {
 
-class GoalFinishDate extends StatelessWidget {
   GoalFinishDate(this.goalDate);
-
   final DateTime goalDate;
+  @override
+  _GoalFinishDate createState() => _GoalFinishDate(goalDate);
+}
+
+class _GoalFinishDate extends State<GoalFinishDate> {
+  
+  _GoalFinishDate(this.goalDate);
+  final DateTime goalDate;
+  String dateString = "";
+  @override 
+  void initState() {
+    super.initState();
+    dateString = "${goalDate.day}-${goalDate.month}-${goalDate.year}";
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 200,
+      height: 70,
       width: 300,
-      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
           color: Colors.blue,
           border: Border.all(
@@ -123,14 +170,14 @@ class GoalFinishDate extends StatelessWidget {
           "Target Date",
           style: TextStyle(
             color: Colors.white,
-            fontSize: 40,
+            fontSize: 32,
           ),
         ),
         Text(
-          "$goalDate",
+          dateString,
           style: TextStyle(
             color: Colors.white,
-            fontSize: 32,
+            fontSize: 24,
           ),
         ),
       ]),
@@ -172,7 +219,7 @@ class _GoalExpectedDateState extends State<GoalExpectedDate> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 150,
+      height: 70,
       width: 300,
       decoration: BoxDecoration(
           color: Colors.blue,
@@ -182,7 +229,7 @@ class _GoalExpectedDateState extends State<GoalExpectedDate> {
           )),
       child: Column(children: [
         Text(
-          "Expected Date to finish",
+          "Expected days until finish",
           style: TextStyle(
             color: Colors.white,
             fontSize: 24,
@@ -192,7 +239,7 @@ class _GoalExpectedDateState extends State<GoalExpectedDate> {
           "$daysToGo",
           style: TextStyle(
             color: Colors.white,
-            fontSize: 72,
+            fontSize: 32,
           ),
         ),
       ]),
@@ -207,42 +254,68 @@ class GoalDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text("Description: " + goal.description);
+    return Text("Description: " + goal.description, 
+    style: TextStyle(
+      fontSize: 24,
+    ),
+    );
   }
 }
 
-class GoalProgressBar extends StatefulWidget {
-  GoalProgressBar(this.goal);
-
+class GoalProgressBox extends StatefulWidget {
+  GoalProgressBox(this.goal);
   final GoalModel goal;
 
   @override
-  _GoalProgressBarState createState() => _GoalProgressBarState(goal);
+  _GoalProgressBoxState createState() => _GoalProgressBoxState(goal);
 }
 
-class _GoalProgressBarState extends State<GoalProgressBar> {
-  _GoalProgressBarState(this.goal);
+class _GoalProgressBoxState extends State<GoalProgressBox> {
+  _GoalProgressBoxState(this.goal);
 
   final GoalModel goal;
-  double _goalProgress = 0;
   String progressString = "";
   double percent = 0;
+  int current = 0;
+  int target = 0;
 
   @override
   void initState() {
     super.initState();
-    percent = 100 * goal.currentAmount / goal.targetAmount;
-    progressString = percent.toStringAsFixed(1) + "%";
-    setState(() {
-      _goalProgress = percent;
-    });
+    current = goal.currentAmount;
+    target = goal.targetAmount;
+    percent = (100 * goal.currentAmount) / goal.targetAmount;
+    progressString = "$percent%";
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      Text("Your progress " + progressString),
-      LinearProgressIndicator(),
-    ]);
+    return Container(
+      height: 70,
+      width: 300,
+      decoration: BoxDecoration(
+          color: Colors.blue,
+          border: Border.all(
+            color: Colors.black,
+            width: 3,
+          )),
+      child: Column(
+        children:[
+          Text(
+          "Progress so far",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+          ),
+        ),
+        Text(
+          "$progressString or £$current of £$target",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 32,
+          ),
+        ),
+      ]),
+    );
   }
 }
