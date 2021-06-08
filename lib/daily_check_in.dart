@@ -106,7 +106,7 @@ class DailyCheckInState extends State<_DailyCheckIn> {
                   style: ElevatedButton.styleFrom(primary: Data.roast_red)),
               SizedBox(width: 16),
               ElevatedButton(
-                  child: Text("Done!"), onPressed: () => Navigator.pop(context)
+                  child: Text("Done"), onPressed: () => Navigator.pop(context)
                   // TODO Send new goal to data store
                   ),
             ],
@@ -143,25 +143,39 @@ class GoalCheckInState extends State<GoalCheckIn> {
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
           itemBuilder: (BuildContext context, int index) {
+            CommitmentModel commitment =
+                widget.goal.commitments.elementAt(index);
+            bool test = (commitment.successfulDays["today"] ?? false);
             return ListTile(
-              title: Text("${widget.goal.commitments.elementAt(index).name}"),
+              title: Text("${commitment.name}"),
               trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-                IconButton(
-                    icon: Icon(Icons.sentiment_very_satisfied,
-                        color: Data.dollar_green),
-                    onPressed: () {
-                      setState(() {
+                Container(
+                    decoration: BoxDecoration(
+                        color: (commitment.successfulDays["today"] ?? false)
+                            ? Data.cleo_blue_tint_2
+                            : null),
+                    child: IconButton(
+                        icon: Icon(Icons.sentiment_very_satisfied,
+                            color: Data.dollar_green),
+                        onPressed: () {
+                          setState(() {
+                            // TODO Notify datastore
+                          });
+                        })),
+                Container(
+                  decoration: BoxDecoration(
+                      color: !(commitment.successfulDays["today"] ?? true)
+                          ? Data.cleo_blue_tint_2
+                          : null),
+                  child: IconButton(
+                      icon: Icon(
+                        Icons.sentiment_very_dissatisfied,
+                        color: Data.roast_red,
+                      ),
+                      onPressed: () {
                         // TODO Notify datastore
-                      });
-                    }),
-                IconButton(
-                    icon: Icon(
-                      Icons.sentiment_very_dissatisfied,
-                      color: Data.roast_red,
-                    ),
-                    onPressed: () {
-                      // TODO Notify datastore
-                    }),
+                      }),
+                )
               ]),
             );
           },

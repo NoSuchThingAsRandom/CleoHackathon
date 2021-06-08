@@ -16,12 +16,12 @@ class CommitmentModel {
         this.successfulDays = LinkedHashMap();
 
   CommitmentModel.templateTwo()
-      : this.name = "Give up coffee",
+      : this.name = "Walk instead of the bus",
         this.targetAmount = 5,
         this.successfulDays = LinkedHashMap.from({"today": true});
 
   CommitmentModel.templateThree()
-      : this.name = "Give up coffee",
+      : this.name = "Resist the Greggs",
         this.targetAmount = 5,
         this.successfulDays = LinkedHashMap.from({"today": false});
 }
