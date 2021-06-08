@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 /// The item that is given up to achieve an item
 class CommitmentModel {
   String name;
@@ -7,4 +9,19 @@ class CommitmentModel {
   Map<String, bool> successfulDays;
 
   CommitmentModel(this.name, this.targetAmount, this.successfulDays);
+
+  CommitmentModel.templateOne()
+      : this.name = "Give up coffee",
+        this.targetAmount = 5,
+        this.successfulDays = LinkedHashMap();
+
+  CommitmentModel.templateTwo()
+      : this.name = "Walk instead of the bus",
+        this.targetAmount = 5,
+        this.successfulDays = LinkedHashMap.from({"today": true});
+
+  CommitmentModel.templateThree()
+      : this.name = "Resist the Greggs",
+        this.targetAmount = 5,
+        this.successfulDays = LinkedHashMap.from({"today": false});
 }
