@@ -1,34 +1,11 @@
-import 'package:cleo_hackathon/backend.dart';
-import 'package:cleo_hackathon/commitment_modification.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 import 'commitment_model.dart';
 import 'daily_check_in.dart';
-import 'data.dart';
 import 'goal_model.dart';
 import 'goal_modification.dart';
-
-class GoalPage extends StatelessWidget {
-  const GoalPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final PageController controller = PageController(initialPage: 0);
-
-    return Consumer<Backend>(builder: (context, goalBackend, child) {
-      return PageView.builder(
-        scrollDirection: Axis.horizontal,
-        controller: controller,
-        itemBuilder: (context, index) {
-          return Goals(goalBackend.goals.elementAt(index));
-        },
-        itemCount: goalBackend.goals.length,
-      );
-    });
-  }
-}
 
 class Goals extends StatelessWidget {
   Goals(this.goal);
@@ -37,111 +14,156 @@ class Goals extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      SingleChildScrollView(
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-        ListTile(
-          title: Text(
-            goal.name,
-            style: GoogleFonts.archivoBlack(),
-            textScaleFactor: 1.8,
-            textAlign: TextAlign.center,
-          ),
-          trailing: IconButton(
-            icon: Icon(Icons.edit_outlined),
-            onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => GoalModification(this.goal))),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.all(10),
-        ),
-        //graph
-        GoalDescription(goal),
-        Padding(
-          padding: EdgeInsets.all(10),
-        ),
-        GoalDates(goal),
-        Padding(
-          padding: EdgeInsets.all(5),
-          child: GoalProgressBox(goal),
-        ),
-
-        CommitmentList(goal),
-        Align(
-            alignment: Alignment.center,
-            child: ElevatedButton(
-              child: Text("Daily Check in"),
-              onPressed: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => DailyCheckInPage())),
-            ))
-      ])),
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Text(
+        "The Goal: " + goal.name,
+        style: GoogleFonts.archivoBlack(),
+        textScaleFactor: 1.8,
+      ),
+      Padding(
+        padding: EdgeInsets.all(10),
+      ),
+      GoalGraph(goal),
+      GoalDescription(goal),
+      Padding(
+        padding: EdgeInsets.all(10),
+      ),
+      GoalDates(goal),
+      Padding(
+        padding: EdgeInsets.all(5),
+        child: GoalProgressBox(goal),
+      ),
+      
+      CommitmentList(goal),
       Align(
-          alignment: Alignment.bottomRight,
-          child: FloatingActionButton(
-            child: Icon(Icons.add),
-            backgroundColor: Data.boss_black_tint_2,
+          alignment: Alignment.center,
+          child: ElevatedButton(
+            child: Text("Create Goal"),
             onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => GoalModification(null))),
+          )),
+      Align(
+          alignment: Alignment.center,
+          child: ElevatedButton(
+            child: Text("Daily Check in"),
+            onPressed: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => DailyCheckInPage())),
           ))
     ]);
   }
 }
 
-class CommitmentList extends StatelessWidget {
+class GoalGraph extends StatefulWidget {
+  GoalGraph(this.goal);
   final GoalModel goal;
+  @override
+  _GoalGraphState createState() => _GoalGraphState(goal);
+}
 
-  CommitmentList(this.goal);
+class _GoalGraphState extends State<GoalGraph> {
+  _GoalGraphState(this.goal);
+  final GoalModel goal;
+  final dataArray = <FlSpot>[];
+  int idx = 0;
+  //final commitsDaily = <double>[];
+  double sum = 0;
+  @override
+  void initState(){
+    super.initState();
+    for (CommitmentModel com in goal.commitments){
+      com.successfulDays.forEach((k,v) => v ? sum++: sum);
+      sum += sum*com.targetAmount;
+    }
+    for (var j = 0; j < goal.daysActive; j++){
+      dataArray.add(FlSpot(goal.daysActive.toDouble()-j,sum));
+      idx = (goal.daysActive-j);
+      for (CommitmentModel comit in goal.commitments){
+        if(comit.successfulDays.values.elementAt(idx)){
+          sum -= comit.targetAmount;
+        }
+      }
+      //final finalDataArray = dataArray.reversed;
+    }
+
+  }
 
   @override
   Widget build(BuildContext context) {
+    return Container(
+              padding: EdgeInsets.all(5),
+              width: 250,
+              height: 150,
+              child: LineChart(LineChartData(
+                borderData: FlBorderData(show: false),
+                gridData: FlGridData(
+                  show: true,
+                ),
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: dataArray,
+                     colors: [
+                       Colors.blue
+                       ],
+                      isCurved: true,
+                  )
+                ],
+              ), 
+              ),
+    );
+  }
+}
+
+class CommitmentList extends StatefulWidget {
+  CommitmentList(this.goal);
+
+  final GoalModel goal;
+
+  @override
+  _CommitmentListState createState() => _CommitmentListState(goal);
+}
+
+class _CommitmentListState extends State<CommitmentList> {
+  _CommitmentListState(this.goal);
+
+  final GoalModel goal;
+  final List<String> commitments = <String>[];
+  final List<String> ammounts = <String>[];
+
+  @override
+  void initState(){
+    super.initState();
+    for(CommitmentModel commitment in goal.commitments) {
+      commitments.add(commitment.name);
+      ammounts.add(commitment.targetAmount.toDouble().toStringAsFixed(2));
+    }
+  }
+  @override
+  Widget build(BuildContext context) {
     return Column(mainAxisSize: MainAxisSize.min, children: [
-      Text(
-        "Your commitments: ",
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-        ),
-        textScaleFactor: 1.6,
+      Text("See your commitments (name - cost)", style: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
       ),
-      Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 5)),
+      ),
       //some div?
       Center(
         child: ListView.builder(
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: goal.commitments.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Card(
-                child: ListTile(
-                  title: Text(
-                    "${goal.commitments.elementAt(index).name} - £${goal.commitments.elementAt(index).targetAmount} per day",
-                    textScaleFactor: 1.2,
-                    textAlign: TextAlign.center,
+          shrinkWrap: true,
+          itemCount: commitments.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Card(
+              child: ListTile(
+                title: Text("${commitments[index]} - £${ammounts[index]} per day", 
+                  style: TextStyle(
+                    fontSize: 24, 
                   ),
-                  trailing: IconButton(
-                      icon: Icon(Icons.edit_outlined),
-                      onPressed: () async {
-                        final commitment = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => CommitmentModification(
-                                    goal.commitments.elementAt(index))));
-                        if (commitment != null) {
-                          Backend backend =
-                              Provider.of<Backend>(context, listen: false);
-                          backend.modifyCommitmentForGoal(
-                              this.goal,
-                              this.goal.commitments.elementAt(index),
-                              commitment);
-                        }
-                      }),
+                  textAlign: TextAlign.center,
                 ),
-              );
-            }),
+              ),
+            );
+          }),
       )
     ]);
   }
@@ -158,33 +180,30 @@ class GoalDates extends StatelessWidget {
       child: Column(children: [
         Padding(
           padding: EdgeInsets.all(5),
-          child: GoalFinishDate(goal.targetDate),
+          child:GoalFinishDate(goal.targetDate),
         ),
         Padding(
           padding: EdgeInsets.all(5),
-          child: GoalExpectedDate(goal),
+          child:GoalExpectedDate(goal),
         ),
       ]),
     );
   }
 }
-
 class GoalFinishDate extends StatefulWidget {
+
   GoalFinishDate(this.goalDate);
-
   final DateTime goalDate;
-
   @override
   _GoalFinishDate createState() => _GoalFinishDate(goalDate);
 }
 
 class _GoalFinishDate extends State<GoalFinishDate> {
+  
   _GoalFinishDate(this.goalDate);
-
   final DateTime goalDate;
   String dateString = "";
-
-  @override
+  @override 
   void initState() {
     super.initState();
     dateString = "${goalDate.day}-${goalDate.month}-${goalDate.year}";
@@ -290,16 +309,16 @@ class GoalDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      goal.description,
-      textScaleFactor: 1.4,
+    return Text("Description: " + goal.description, 
+    style: TextStyle(
+      fontSize: 16,
+    ),
     );
   }
 }
 
 class GoalProgressBox extends StatefulWidget {
   GoalProgressBox(this.goal);
-
   final GoalModel goal;
 
   @override
@@ -335,8 +354,9 @@ class _GoalProgressBoxState extends State<GoalProgressBox> {
             color: Colors.black,
             width: 3,
           )),
-      child: Column(children: [
-        Text(
+      child: Column(
+        children:[
+          Text(
           "Progress so far",
           style: TextStyle(
             color: Colors.white,
