@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'commitment_model.dart';
+import 'daily_check_in.dart';
 import 'goal_model.dart';
+import 'goal_modification.dart';
 
 class Goals extends StatelessWidget {
   Goals(this.goal);
