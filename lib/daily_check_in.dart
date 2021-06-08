@@ -125,6 +125,48 @@ class GoalCheckIn extends StatefulWidget {
 }
 
 class GoalCheckInState extends State<GoalCheckIn> {
+  Future<void> giveRoastAboutCheckIn(BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text("Commitment Failure"),
+        content: const Text(
+            "That's 3 times you've failed this commitment in a row!\nGet your **** together"),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("I'll get better, I promise!"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Nah, I give up"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> giveHypeAboutCheckIn(BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text("Commitment Awesomeness"),
+        content: Text(
+            "You've nailed this commitment 3 times in a row!\nYou'll get your ${widget.goal.name} soon!"),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Yay, I'm awesome!"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("I can't wait for that ${widget.goal.name}!"),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -144,7 +186,7 @@ class GoalCheckInState extends State<GoalCheckIn> {
           physics: NeverScrollableScrollPhysics(),
           itemBuilder: (BuildContext context, int index) {
             CommitmentModel commitment =
-                widget.goal.commitments.elementAt(index);
+            widget.goal.commitments.elementAt(index);
             bool test = (commitment.successfulDays["today"] ?? false);
             return ListTile(
               title: Text("${commitment.name}"),
@@ -158,6 +200,9 @@ class GoalCheckInState extends State<GoalCheckIn> {
                         icon: Icon(Icons.sentiment_very_satisfied,
                             color: Data.dollar_green),
                         onPressed: () {
+                          if (commitment.name == "Walk instead of the bus") {
+                            this.giveHypeAboutCheckIn(context);
+                          }
                           setState(() {
                             // TODO Notify datastore
                           });
@@ -173,6 +218,9 @@ class GoalCheckInState extends State<GoalCheckIn> {
                         color: Data.roast_red,
                       ),
                       onPressed: () {
+                        if (commitment.name == "Resist the Greggs") {
+                          this.giveRoastAboutCheckIn(context);
+                        }
                         // TODO Notify datastore
                       }),
                 )

@@ -15,7 +15,7 @@ class GoalModel {
       : this.commitments = LinkedHashSet();
 
   GoalModel.templateOne()
-      : this.name = "Template1",
+      : this.name = "Goal Template1",
         this.description = "Some long boring description1",
         this.targetDate = DateTime.now(),
         this.targetAmount = 100,
@@ -27,7 +27,7 @@ class GoalModel {
         ]);
 
   GoalModel.templateTwo()
-      : this.name = "Template2",
+      : this.name = "Goal Template2",
         this.description = "Some long boring description2",
         this.targetDate = DateTime.now(),
         this.targetAmount = 200,
@@ -39,7 +39,7 @@ class GoalModel {
         ]);
 
   GoalModel.templateThree()
-      : this.name = "Template3",
+      : this.name = "Goal Template3",
         this.description = "Some long boring description3",
         this.targetDate = DateTime.now(),
         this.targetAmount = 300,
