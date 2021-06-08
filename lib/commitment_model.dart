@@ -10,18 +10,38 @@ class CommitmentModel {
 
   CommitmentModel(this.name, this.targetAmount, this.successfulDays);
 
-  CommitmentModel.templateOne()
-      : this.name = "Give up coffee",
-        this.targetAmount = 5,
+  CommitmentModel.noDrinksOnFriday()
+      : this.name = "No Drinks on friday",
+        this.targetAmount = 10,
         this.successfulDays = LinkedHashMap();
 
-  CommitmentModel.templateTwo()
-      : this.name = "Walk instead of the bus",
+  CommitmentModel.starbucks()
+      : this.name = "Give up going to starbucks :(",
         this.targetAmount = 5,
-        this.successfulDays = LinkedHashMap.from({"today": true});
+        this.successfulDays = LinkedHashMap.from({"0": true});
 
-  CommitmentModel.templateThree()
+  CommitmentModel.walking()
+      : this.name = "Walk instead of getting the bus",
+        this.targetAmount = 2,
+        this.successfulDays = LinkedHashMap.from({"0": true});
+
+  CommitmentModel.shopAtAldi()
+      : this.name = "Buy everything from Aldi *Shudder*",
+        this.targetAmount = 20,
+        this.successfulDays = LinkedHashMap.from({"0": true});
+
+  CommitmentModel.greggs()
       : this.name = "Resist the Greggs",
         this.targetAmount = 5,
-        this.successfulDays = LinkedHashMap.from({"today": false});
+        this.successfulDays = LinkedHashMap.from({"0": false});
+
+  CommitmentModel.drinkTapWaterInsteadOfBottled()
+      : this.name = "Suffer with boring tap water",
+        this.targetAmount = 10,
+        this.successfulDays = LinkedHashMap.from({"0": true});
+
+  CommitmentModel.noClothesShopping()
+      : this.name = "No clothes for me",
+        this.targetAmount = 50,
+        this.successfulDays = LinkedHashMap.from({"0": true});
 }

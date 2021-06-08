@@ -68,9 +68,9 @@ class DailyCheckInState extends State<_DailyCheckIn> {
                   CommitmentModel commitment =
                       allCommitments.elementAt(index - 1);
                   Color displayColor = Data.paper_white;
-                  if (commitment.successfulDays[today] == null) {
+                  if (commitment.successfulDays["0"] == null) {
                     displayColor = Data.paper_white;
-                  } else if (commitment.successfulDays[today] ?? false) {
+                  } else if (commitment.successfulDays["0"] ?? false) {
                     displayColor = Data.dollar_green;
                   } else {
                     displayColor = Data.roast_red;
@@ -196,8 +196,8 @@ class GoalCheckInState extends State<GoalCheckIn> {
                 Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(10)),
-                        color: (commitment.successfulDays["today"] ?? false)
-                            ? Data.cleo_blue_tint_2
+                        color: (commitment.successfulDays["0"] ?? false)
+                            ? Data.cleo_blue_tint_3
                             : null),
                     child: IconButton(
                         icon: Icon(Icons.sentiment_very_satisfied,
@@ -207,13 +207,14 @@ class GoalCheckInState extends State<GoalCheckIn> {
                             this.giveHypeAboutCheckIn(context);
                           }
                           setState(() {
+                            commitment.successfulDays["0"] = true;
                             // TODO Notify datastore
                           });
                         })),
                 Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
-                      color: !(commitment.successfulDays["today"] ?? true)
+                      color: !(commitment.successfulDays["0"] ?? true)
                           ? Data.cleo_blue_tint_2
                           : null),
                   child: IconButton(
@@ -225,6 +226,10 @@ class GoalCheckInState extends State<GoalCheckIn> {
                         if (commitment.name == "Resist the Greggs") {
                           this.giveRoastAboutCheckIn(context);
                         }
+                        setState(() {
+                          commitment.successfulDays["0"] = false;
+                          // TODO Notify datastore
+                        });
                         // TODO Notify datastore
                       }),
                 )

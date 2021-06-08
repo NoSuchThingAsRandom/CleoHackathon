@@ -95,6 +95,7 @@ class CommitmentModificationState extends State<CommitmentModification> {
                           onPressed: () {
                             _formKey.currentState?.save();
                             print("$newName   $newAmountSaved");
+
                             Navigator.pop(
                                 context,
                                 CommitmentModel(
