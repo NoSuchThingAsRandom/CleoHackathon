@@ -14,6 +14,9 @@ class GoalModel {
       this.currentAmount)
       : this.commitments = LinkedHashSet();
 
+  GoalModel.newGoal(this.name, this.description, this.targetDate,
+      this.targetAmount, this.currentAmount, this.commitments);
+
   GoalModel.templateOne()
       : this.name = "Goal Template1",
         this.description = "Some long boring description1",

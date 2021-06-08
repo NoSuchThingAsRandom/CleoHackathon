@@ -16,6 +16,8 @@ class CommitmentModification extends StatefulWidget {
 
 class CommitmentModificationState extends State<CommitmentModification> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String newName = "";
+  int newAmountSaved = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +46,12 @@ class CommitmentModificationState extends State<CommitmentModification> {
                           border: UnderlineInputBorder(),
                           hintText: "Quit starbucks",
                           labelText: "Choose a name "),
+                      onSaved: (String? value) {
+                        print("Saving name: $value");
+                        if (value != null && value.isNotEmpty) {
+                          this.newName = value;
+                        }
+                      },
                     ),
                   ),
                   SizedBox(
@@ -61,6 +69,12 @@ class CommitmentModificationState extends State<CommitmentModification> {
                           border: UnderlineInputBorder(),
                           hintText: "£10",
                           labelText: "How much will it save a day?"),
+                      onSaved: (String? value) {
+                        if (value != null && value.isNotEmpty) {
+                          this.newAmountSaved =
+                              int.parse(value); //value as int;
+                        }
+                      },
                     ),
                   ),
                   SizedBox(
@@ -77,7 +91,16 @@ class CommitmentModificationState extends State<CommitmentModification> {
                       SizedBox(width: 16),
                       ElevatedButton(
                           child: Text("Create!"),
-                          onPressed: () => Navigator.pop(context)
+                          onPressed: () {
+                            _formKey.currentState?.save();
+                            print("$newName   $newAmountSaved");
+                            Navigator.pop(
+                                context,
+                                CommitmentModel(
+                                    this.newName,
+                                    this.newAmountSaved,
+                                    widget.state?.successfulDays ?? {}));
+                          }
                           // TODO Send new commitment to data store
                           ),
                     ],

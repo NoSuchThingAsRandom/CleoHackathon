@@ -1,14 +1,17 @@
 import 'package:cleo_hackathon/cleo_appbar.dart';
+import 'package:cleo_hackathon/goal_backend.dart';
 import 'package:cleo_hackathon/goal_model.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 import 'chat_page.dart';
 import 'data.dart';
 import 'goals.dart';
 
 void main() {
-  runApp(Cleo());
+  runApp(ChangeNotifierProvider(
+      create: (context) => GoalBackend(), child: Cleo()));
 }
 
 class Cleo extends StatelessWidget {

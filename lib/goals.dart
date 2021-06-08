@@ -69,15 +69,18 @@ class _CommitmentListState extends State<CommitmentList> {
   // }
   @override
   Widget build(BuildContext context) {
-    return Column(mainAxisSize: MainAxisSize.min, children: [
-      Text("See your commits"),
-      ListView.builder(
-          shrinkWrap: true,
-          itemCount: commitments.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Text("${commitments[index]} ${ammounts[index]}");
-          }),
-    ]);
+    return Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("See your commits"),
+          ListView.builder(
+              shrinkWrap: true,
+              itemCount: commitments.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Text("${commitments[index]} ${ammounts[index]}");
+              }),
+        ]);
   }
 }
 
