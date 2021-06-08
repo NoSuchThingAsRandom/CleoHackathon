@@ -1,7 +1,7 @@
-import 'package:cleo_hackathon/chat_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'backend.dart';
 import 'data.dart';
 
 // Useful: https://www.freecodecamp.org/news/build-a-chat-app-ui-with-flutter/
@@ -13,8 +13,7 @@ class ChatPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Simple provider for storing messages
     // https://flutter.dev/docs/development/data-and-backend/state-mgmt/simple#changenotifier
-    return ChangeNotifierProvider(
-        create: (context) => ChatBackend(), child: _ChatPage());
+    return _ChatPage();
   }
 }
 
@@ -32,11 +31,11 @@ class _ChatPageState extends State<_ChatPage> {
   Widget build(BuildContext context) {
     return Stack(children: <Widget>[
       /// Builds and displays the messages
-      Consumer<ChatBackend>(builder: (context, chatBackend, child) {
+      Consumer<Backend>(builder: (context, Backend, child) {
         return ListView.builder(
-            itemCount: chatBackend.messages.length,
+            itemCount: Backend.messages.length,
             itemBuilder: (BuildContext context, int index) {
-              return ChatMessage(chatBackend.messages.elementAt(index));
+              return ChatMessage(Backend.messages.elementAt(index));
             });
       }),
 
@@ -83,6 +82,11 @@ class _ChatPageState extends State<_ChatPage> {
                         hintText: "Say something...",
                         hintStyle: TextStyle(color: Data.boss_black_tint_2),
                         border: InputBorder.none),
+                    onSubmitted: (value) {
+                      print("Adding message ${controller.text}");
+                      Provider.of<Backend>(context, listen: false)
+                          .add(Message(controller.text, false));
+                    },
                   ),
                 ),
                 SizedBox(
@@ -90,12 +94,12 @@ class _ChatPageState extends State<_ChatPage> {
                 ),
 
                 /// Submit button, could technically remove it?
-                Consumer<ChatBackend>(
-                  builder: (context, chatBackend, child) {
+                Consumer<Backend>(
+                  builder: (context, Backend, child) {
                     return FloatingActionButton(
                       onPressed: () {
                         print("Adding message ${controller.text}");
-                        chatBackend.add(Message(controller.text, false));
+                        Backend.add(Message(controller.text, false));
                       },
                       child: Icon(
                         Icons.send,

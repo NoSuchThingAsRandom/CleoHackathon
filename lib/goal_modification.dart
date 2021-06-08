@@ -1,8 +1,8 @@
 import 'dart:collection';
 
+import 'package:cleo_hackathon/backend.dart';
 import 'package:cleo_hackathon/commitment_model.dart';
 import 'package:cleo_hackathon/commitment_modification.dart';
-import 'package:cleo_hackathon/goal_backend.dart';
 import 'package:cleo_hackathon/goal_model.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -211,7 +211,7 @@ class GoalModificationState extends State<GoalModification> {
                               style: ElevatedButton.styleFrom(
                                   primary: Data.roast_red)),
                           SizedBox(width: 16),
-                          Consumer<GoalBackend>(
+                          Consumer<Backend>(
                               builder: (context, goalBackend, child) {
                             return ElevatedButton(
                                 child: Text(
@@ -240,7 +240,7 @@ class GoalModificationState extends State<GoalModification> {
   }
 
   Widget temp(BuildContext context) {
-    final temp = context.watch<GoalBackend>();
+    final temp = context.watch<Backend>();
     List<DropdownMenuItem<CommitmentModel>> commitmentDropdownItems = temp
         .commitments
         .map((commitment) => DropdownMenuItem<CommitmentModel>(

@@ -1,5 +1,5 @@
+import 'package:cleo_hackathon/backend.dart';
 import 'package:cleo_hackathon/commitment_modification.dart';
-import 'package:cleo_hackathon/goal_backend.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +17,7 @@ class GoalPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final PageController controller = PageController(initialPage: 0);
 
-    return Consumer<GoalBackend>(builder: (context, goalBackend, child) {
+    return Consumer<Backend>(builder: (context, goalBackend, child) {
       return PageView.builder(
         scrollDirection: Axis.horizontal,
         controller: controller,
@@ -131,8 +131,8 @@ class CommitmentList extends StatelessWidget {
                                 builder: (context) => CommitmentModification(
                                     goal.commitments.elementAt(index))));
                         if (commitment != null) {
-                          GoalBackend backend =
-                              Provider.of<GoalBackend>(context, listen: false);
+                          Backend backend =
+                              Provider.of<Backend>(context, listen: false);
                           backend.modifyCommitmentForGoal(
                               this.goal,
                               this.goal.commitments.elementAt(index),
